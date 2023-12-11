@@ -1,0 +1,27 @@
+
+# echo 'postgresql_enable="YES"' >> /etc/rc.conf
+# /usr/local/etc/rc.d/postgresql initdb
+# /usr/local/etc/rc.d/postgresql start
+# sockstat -4 -6 | grep 5432
+# vi /var/db/postgres/data11/postgresql.conf
+listen_addresses = '*' => listen_addresses = '192.168.1.20'
+# service postgresql restart
+# sockstat -4 -6 | grep 5432
+# passwd  postgres
+
+
+$ su - postgres
+$ psql -c "alter user postgres with password 'StrongPassword'"
+ALTER ROLE
+
+
+экспорт из БД
+pg_dump –-host=<host> --username=<name> --dbname=<database name> --file=<database>.sql
+импорт в БД
+psql --file=<database>.sql --host=<server name> --port=5432 --username=<user> --dbname=<target database name>
+
+
+$ su - postgres
+$ psql -c "drop database budgeting_system"
+
+

@@ -1,0 +1,48 @@
+git clone https://aborodin_thefactory@bitbucket.org/thefactoryteam/swap-factory.git .
+
+
+git status
+
+git add .
+git commit -m "m"
+git push --set-upstream origin master
+
+git log
+
+git blame my_file — Просмотреть, кто, что и когда изменил в my_file.
+
+Git global setup
+
+git config --list
+
+git config --global user.name "Andrey Borodin"
+git config --global user.email "boroddon@gmail.com"
+
+Create a new repository
+
+git clone https://gitlab.com/themeart/intern/password_app.git
+cd password_app
+git switch -c main
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin main
+
+Push an existing folder
+
+cd existing_folder
+git init --initial-branch=main
+git remote add origin https://gitlab.com/themeart/intern/password_app.git
+git add .
+git commit -m "Initial commit"
+git push -u origin main
+
+Push an existing Git repository
+
+cd existing_repo
+git remote rename origin old-origin
+git remote add origin https://gitlab.com/themeart/intern/password_app.git
+git push -u origin --all
+git push -u origin --tags
+
+git config --global core.autocrlf false

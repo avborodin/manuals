@@ -1,0 +1,79 @@
+composer create-project --prefer-dist laravel/laravel blog - это создание проекта с помощью composer
+
+php artisan serve - это запуска локального сервера 
+
+composer require laravel/ui
+php artisan ui bootstrap --auth
+php artisan migrate
+
+php artisan make:model Role -m
+php artisan make:model Permission -m
+
+php artisan make:migration create_users_permissions_table
+php artisan make:migration create_users_roles_table
+php artisan make:migration create_roles_permissions_table
+
+php artisan migrate
+
+php artisan make:seeder PermissionSeeder
+php artisan make:seeder RoleSeeder
+php artisan make:seeder UserSeeder
+
+
+php artisan db:seed
+
+
+php artisan make:factory ProductFactory
+
+
+
+php artisan migrate:refresh это обновление миграции после изменения чего то в миграционных файлах
+
+php artisan make:model Counterparty -m
+php artisan make:model Bank -m
+
+php artisan make:migration create_counterparty_table
+
+
+php artisan route:list
+
+
+composer require laravel/ui
+php artisan ui bootstrap
+npm install
+npm run dev
+npx mix
+
+
+
+
+
+
+
+
+Download and install the code
+git clone https://github.com/academico-sis/academico.git
+Copy .env.example to .env and edit the file with your database settings (you need to create a new database)
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+The last command will fill the database with some default data you need before launching the application for the first time.
+
+Run the application
+php artisan serve
+If all went well, you should be able to open the application in your browser at http://127.0.0.1:8000
+
+Login using username admin and password secret
+
+
+
+
+
+
+
+select * from 
+    work_intervals 
+where
+    work_intervals.work_start < '2022-01-12 00:00:00'  and 
+    (work_intervals.work_finish > '2022-01-01 00:00:00' or work_intervals.work_finish is null) 

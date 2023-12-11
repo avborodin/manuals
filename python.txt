@@ -1,0 +1,179 @@
+python
+
+django-admin startproject mysite
+
+python manage.py runserver
+python manage.py startapp название_приложения
+
+python manage.py makemigrations landing
+python manage.py migrate
+
+python manage.py help
+
+python manage.py createsuperuser
+
+python manage.py changepassword <username>
+
+python manage.py showmigrations - отображение списка миграций
+python manage.py sqlmigrate counterparty 0001_initial - показан фактический SQL-запрос
+
+
+
+
+
+
+python manage.py makemigrations --empty test_work
+
+operations = [
+        migrations.RenameField('test', 'title', 'titlee'),
+        migrations.RenameField('test', 'descr', 'descrr'),
+	migrations.AddField('test', 'new', models.IntegerField(default=0)),
+	migrations.RemoveField(
+          model_name='sample',
+          name='category',
+      ),
+      migrations.RenameField(
+          model_name='sample',
+          old_name='category_fk',
+          new_name='category',
+      ), 
+	migrations.AlterField(
+          model_name='sample',
+          name='category',
+          field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='core.Category'),
+      ),
+    ] 
+
+
+
+python -m django --version
+pip install django --upgrade
+python -m pip install --upgrade pip
+
+python manage.py thumbnail clear
+python manage.py thumbnail cleanup
+
+l:admin
+p:adminadmin
+
+
+================
+
+pip install -r requirements.txt
+
+
+pip install django-modeltranslation
+
+pip install git+https://github.com/mike-huls/toolbox.git
+
+django-admin makemessage -l en
+django-admin compilemessages
+
+python
+web-разработка (Django, Flask)
+
+
+pip freeze создает список всех установленных пакетов 
+pip freeze -> requirements.txt
+
+code . открывает прогу vscode
+
+pip help - помощь по доступным командам.
+
+pip install package_name - установка пакета(ов).
+
+pip uninstall package_name - удаление пакета(ов).
+
+pip list - список установленных пакетов.
+
+pip show package_name - показывает информацию об установленном пакете.
+
+pip search - поиск пакетов по имени.
+
+pip --proxy user:passwd@proxy.server:port - использование с прокси.
+
+pip install -U - обновление пакета(ов).
+
+pip install --force-reinstall - при обновлении, переустановить пакет, даже если он последней версии.
+
+
+python manage.py collectstatic
+
+
+python3 -m venv env
+pip install -r requirements.txt
+
+
+help(name_module)
+help('modules') - список модулей для import
+
+
+=== celery ===========================
+celery -A имя_проекта worker -l info
+
+==== django_crontab ===================
+
+https://pypi.org/project/django-crontab/
+
+python manage.py crontab add
+python manage.py crontab show
+python manage.py crontab remove
+
+=======================================
+python3 setup.py sdist bdist_wheel
+pip install twine
+twine check dist/*
+twine upload -u avborodin -p pypiuP8rAc2k dist/*
+
+
+=====================================
+
+url = 'http://cbrates.rbc.ru/tsv/840/2021/12/05.tsv'
+urllib.request.urlopen(url).read()
+r = urllib.request.urlopen(url).read()
+r = r.decode()
+type(r)
+<class 'str'>
+print(r)
+1       73.7426
+r = r.split('\t')
+r
+['1', '73.7426']
+float(r[1])*2
+147.4852
+
+==== Экспорт (дамп) с dumpdata ===
+
+./manage.py dumpdata > db.json
+
+ дамп моделей определенного приложения:
+./manage.py dumpdata admin > admin.json
+
+И дамп определенной таблицы:
+./manage.py dumpdata admin.logentry > admin_logentry.json
+
+кроме таблицы auth.permission
+./manage.py dumpdata --exclude auth.permission > db.json
+
+По-умолчанию данные экспортируются в одну строку, без какого либо форматирования. Это не очень удобно для чтения человеком, поэтому можно указать отстуступы с помощью ключа --indent. Следующая команда экспортирует таблицу auth.user в более удобном для восприятия человека виде:
+
+./manage.py dumpdata auth.user --indent 2 > db.json
+
+===== Импорт (восстановление) с loaddata ===
+./manage.py loaddata db.json
+
+исключить таблицы contenttypes и auth.permissions:
+./manage.py dumpdata --exclude auth.permission --exclude contenttypes > db.json
+
+После этого импорт должен пройти без проблем:
+./manage.py loaddata db.json
+
+===========================================
+
+Python3, SQLAlchemy, Flask/FastAPI, PyYAML, PostgreSQL, Cassandra, Kafka, Oracle, Elasticsearch, Doсker, Kubernetes, Teamcity, git, unittests
+
+https://www.django-rest-framework.org
+https://www.djangoproject.com/
+https://httpbin.org/
+https://www.python.org/
+https://requests.readthedocs.io/en/latest/

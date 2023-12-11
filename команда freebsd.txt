@@ -1,0 +1,345 @@
+find / -name example.filename
+
+# cd /usr/ports
+# make search name=apache24
+# make search key=apache24
+
+
+whereis apache24
+apache24: /usr/ports/www/apache24
+
+kldload accf_http
+
+
+==== begin samba ===
+открыть папки из винда на фрихе
+
+pkg install samba413
+
+Дописать в /etc/hosts:
+
+192.168.1.40            laptop-fb3luelh
+
+touch ~/.nsmbrc
+
+дописать в ~/.nsmbrc и /etc/nsmb.conf:
+
+[LAPTOP-FB3LUELH:ANDREW]
+password=DezbnhTr
+
+
+cat /etc/nsmb.conf > /usr/local/etc/smb4.conf  
+mount_smbfs -N -I 192.168.1.40 //andrew@laptop-fb3luelh/data /mnt/data/
+
+Добавить в /etc/fstab:
+
+//andrew@laptop-fb3luelh/data /mnt/data smbfs rw,-N,-I192.168.1.40 0 0
+
+===== end samba =====
+
+
+ln -s /usr/local/bin/python3.6 /usr/local/bin/python
+# python --version
+wPython 3.6.6
+
+
+
+#sqlite3 example.db
+
+
+
+ps aux | grep -i manage
+
+
+rm -rf /var/db/mysql/*
+
+
+
+===== список модулей апачи =======
+# httpd -M
+# apachectl -M
+===== Найти нужное ПО и удалить его 
+pkg info | grep php | awk ‘{print $1}’ | xargs -o pkg delete -f
+
+
+freebsd-version
+uname -mrs
+
+======= Make sure you apply all existing pending updates for FreeBSD 12.x:
+freebsd-update fetch
+freebsd-update install
+pkg update
+pkg upgrade
+
+========= обновление портов =============
+portsnap fetch
+portsnap extract
+
+portsnap fetch
+portsnap update
+
+portmaster -L
+portmaster -a
+portmaster -af
+============== установка ssl сертификата =======
+
+certbot --apache -d your-domain -d www.your-domain
+
+certbot renew --dry-run
+crontab -e
+
+SHELL=/bin/sh
+PATH=/etc:/bin:/sbin:/usr/bin:/usr/sbin
+# Order of crontab fields
+# minute    hour    mday    month   wday    command
+  0         0,12    *       *       *       /usr/local/bin/certbot renew
+
+
+make all install clean
+
+cat /dev/null > /var/log/reconnect.log
+
+
+LoadModule wsgi_module        libexec/apache24/mod_wsgi.so
+
+<IfModule ssl_module>
+SSLRandomSeed startup builtin
+SSLRandomSeed connect builtin
+</IfModule>
+
+
+<Directory />
+    AllowOverride ALL
+    Options -Indexes
+    Order allow,deny
+    allow from all
+    Require all granted
+</Directory>
+
+
+
+<VirtualHost *:80>
+    ServerName test.a-study.com
+    #ServerAlias www.gallery.ru
+    #ServerAdmin test@test.ru
+    WSGIDaemonProcess test.a-study.com python-home=/data/vhosts/test.a-study.com
+/venv_django python-path=/data/vhosts/test.a-study.com/astudy
+    WSGIProcessGroup test.a-study.com
+    WSGIScriptAlias / /data/vhosts/test.a-study.com/astudy/astudy/wsgi.py
+    #WSGIPythonHome /usr/home/borodin/venv_django
+    #WSGIPythonPath /usr/home/borodin/test.a-study.com
+    Alias /media/ /data/vhosts/test.a-study.com/astudy/media/
+    <Directory /data/vhosts/test.a-study.com/astudy/astudy/>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+</VirtualHost>
+
+
+ps ax | grep 8080
+$a=$(ps ax | grep 8080 | awk '{print $1}')
+kill -9 $a
+
+
+На будущее: если top показывает высокую нагрузку в system/interrupt, то нужно запускать его как top -SHPI или top -SHPz
+
+systat
+
+
+
+
+
+Утилиты мониторинга в FreeBSD
+
+1. Утилита top 
+
+Она показывает общие сведения о процессоре, памяти и процессах. Параметры утилиты (действуют когда top уже запущен):
+
+S - показать системные процессы;
+
+u [имя пользователя] - например u pgsql покажет процессы запущенные от пользователя pgsql;
+
+o - используем для сортировки, возможные параметры — pri, size, res, cpu, time, threads;
+
+m - переключение между режимами отображения нагрузки и ввода-вывода;
+
+k - завершить процесс (kill), ввод pid процесса;
+
+r - изменить приоритет процесса, вводим pid процесса;
+
+n - отображать статистику по конкретному процессу;
+
+top -n 3 - показывает самые ресурсоёмкие приложения в данный момент (три штуки)
+
+
+2. gstat - показывает использование дисков.
+
+gstat -a - для вывода только активных устройств
+
+
+3. vmstat - показывает состояние виртуальной памяти и буфера.
+
+vmstat 6 - отображает статистику каждые шесть секунд;
+
+vmstat -z - показывает состояние буфера;
+
+vmstat -i - показывает состояние прерываний;
+
+
+4. iostat - выводит статистику по I/O усройств
+
+iostat -d -w6 - показывать информацию по дискам, с периодичностью в 6 секун;
+
+iostat -dx -w6 - показывает расширенную статистику;
+
+
+5. systat - отображает различные параметры системы.
+
+systat -vmstat 1- отображает суммарную системную статистику;
+
+systat -netstat 1- показывает активные сетевые соединения;
+
+systat -ifstat 1- отображает нагрузку сетевых интерфейсов;
+
+systat -tcp 1- отображает статистику tcp-соединения, возможен просмотр по icmp, ip, icmp6, ip6;
+
+systat -iostat 1- отображает нагрузку на процессор, дисковую подсистему;
+
+systat -swap 1- показывает загрузку файла подкачки 
+
+
+6. netstat - показывает активные сетевые соединения.
+
+netstat -w 1- количество пакетов в настоящее время;
+
+netstat -ibt - вывод сетевых интерфейсов с разбивкой по IP адресам, отображает объём трафика, количество ошибок, коллизий;
+
+netstat -rn - отображает таблицу маршрутизации; 
+
+
+7. diskinfo -t ad0 – показывает информацию по диску, и делает тест на дисковую производительность.
+
+
+8. sysctl - позволяет посмотреть параметры в системы и внести изменения, такие как стек tcp/ip, вирутальной памяти.
+
+sysctl -a - показывает все параметры;
+
+sysctl kern.ipc.numopensockets - показывает количество открытых сокетов;
+
+sysctl kern.openfiles - показывает количество открытых файлов
+
+
+9. fstat - показывает список открытых файлов.
+
+fstat | grep http | wc -l - список открытых файлов по процессу http
+
+
+10. sockstat - отображает информацию о сокетах, сетевых и файловых.
+
+sockstat -l - список портов открытых на прослушивание;
+
+sockstat -c - список установленных соединений;
+
+sockstat -4, -6 - по протоколу ipv4 или ipv6
+
+
+11. lsof - показывает информацию об открытых сокетах, файлах и сетевых соединениях.
+
+lsof -i -n - показывает открытые интернет-соединения;
+
+lsof -i -n | grep ESTABLISHED - показывает открытые, и установленные сетевые соединения
+
+
+sysctl kern.timecounter
+sysctl kern.eventtimer
+
+
+sysctl kern.hz
+sysctl kern.timecounter.hardware=HPET
+
+
+
+Если поможет, пропиши изменение в /etc/sysctl.conf
+Если нет - покажи systat -vm 3, когда проблема повторится
+лучше даже запустить заранее systat -vm 3 в отдельной сессии
+
+
+
+
+
+
+SCREEN
+
+Ctrl-A C создаёт новую сессию, 
+Ctr-A N переключает тебя на другую сессию (следующую по очереди).
+Ctrl-A P переключает в предыдущую сессию. Там ещё миллион функций, но для начала этого тебе хватит.
+
+c от create
+p от previous
+n от next
+
+
+
+в single user mode нужно вручную смонтировать файловые системы: fsck -p && mount -a
+
+а затем запустить сеть: /etc/netstart
+
+
+mtr/winmtr инфо о разрыве связи с инетом можно найти причину
+
+
+
+
+kill -9 `sudo lsof -t -i:9001`
+
+a=$(ps ax | grep 8080 | awk '{print $1}')
+
+kill -9 $(ps ax | grep 8080 | awk '{print $1}')
+
+
+X.org + xfce4 
+
+LxQT
+
+
+ i3wm, bspwm
+
+ KDE2
+
+
+
+Лично я обновляю через команду
+
+#portupgrade -rcvf имя_порта 
+Ну, а узнать список обновляемых портов можно командой
+
+#pkg_version -v | grep "need"
+png-1.4.1_1                    < need updating (port has 1.4.3)
+Далее просто
+
+portupgrade -rcvf png-1.4.1_1 
+
+====== termbin.com ========
+
+cat /etc/fstab | nc termbin.com 9999
+After running this command you'll get in response url address with text file.
+
+To make your life easier you can add such alias to your .bashrc file:
+
+echo 'alias tb="nc termbin.com 9999"' >> .bashrc
+Now sharing will be much simplier:
+
+uname -a | tb
+
+====== wifi =============
+
+Look for the SSID with: sudo ifconfig wlan0 scan
+Put the ssid and password in /etc/wpa_supplicant.conf
+Connect with the given SSID with: sudo ifconfig wlan0 ssid "the searched ssid name"
+Restart netif service otherwise internet will not work: sudo service netif restart
+
+
+===== регулятор яркости =======
+backlight 65
+

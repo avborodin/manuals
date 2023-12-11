@@ -1,0 +1,216 @@
+Установка и настройка Mysql
+
+# cd /usr/ports/databases/mysql55-server
+# make config-recursive
+# make install clean
+
+# echo 'mysql_enable="YES"' >> /etc/rc.conf
+# echo 'mysql_dbdir="/web/mysql"' >> /etc/rc.conf
+
+Создаем необходимые папки и выставляем права:
+# mkdir /web && cd /web && mkdir mysql && chown mysql:mysql mysql/
+
+Создаем файл конфигурации:
+# touch /web/mysql/my.cnf
+# chown mysql:mysql /web/mysql/my.cnf
+
+Записываем следующее содержание в файл настроек:
+
+[client]
+port = 3306
+socket = /tmp/mysql.sock
+
+[mysqld]
+port = 3306
+bind-address =127.0.0.1
+socket = /tmp/mysql.sock
+skip-external-locking
+key_buffer_size = 256M
+max_allowed_packet = 1M
+table_open_cache = 256
+sort_buffer_size = 1M
+read_buffer_size = 1M
+read_rnd_buffer_size = 4M
+myisam_sort_buffer_size = 64M
+thread_cache_size = 8
+query_cache_size= 16M
+thread_concurrency = 8
+#log=/var/log/mysql.log # Лог всех SQL-запросов
+#log-bin=/var/log/mysql-bin.log # Бинарный лог всех SQL-запросов
+log-error=/var/log/mysql-err.log # Лог ошибок в работе демона СУБД MySQL
+#log-slow-queries=/var/log/mysql.slow # Лог всех медленных SQL-запросов
+#log-bin=mysql-bin
+#log=/var/log/mysql.log
+#binlog_format=mixed
+server-id = 1
+
+[mysqldump]
+quick
+max_allowed_packet = 16M
+
+[mysql]
+no-auto-rehash
+
+[myisamchk]
+key_buffer_size = 128M
+sort_buffer_size = 128M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+
+
+# touch /var/log/mysql-err.log
+# chown mysql:mysql /var/log/mysql-err.log
+
+# /usr/local/etc/rc.d/mysql-server start
+
+Проверяем, все ли запустилось как следует:
+# ps axw | grep mysql
+
+Если все в порядке, то вы увидите что-то похожее на это:
+
+52490 - Is 0:00.02 /bin/sh /usr/local/bin/mysqld_safe – defaults-extra-file=/web/mysql/my.cnf – user=mysql – datadir=/web/mysql – pid-file=/web/mysql/websrv.local.pid
+ 52784 - I 0:00.17 /usr/local/libexec/mysqld – defaults-extra-file=/web/mysql/my.cnf – basedir=/usr/local – datadir=/web/mysql – plugin-dir=/usr/local/lib/mysql/plugin – user=mysql – log-err
+ 52802 1 S+ 0:00.00 grep mysql
+
+Дальше воспользуемся стандартным скриптом для безопасной настройки mysql:
+# /usr/local/bin/mysql_secure_installation
+
+Edit my.cnf file and put this setting in mysqld section:
+[mysqld]
+default_authentication_plugin= mysql_native_password 
+
+ALTER USER 'borodin'@'localhost' IDENTIFIED WITH mysql_native_password
+BY 'здесь пароль';  
+FLUSH PRIVILEGES;
+
+rm -rf /var/db/mysql/*
+
+MySQL80 has a default /usr/local/etc/mysql/my.cnf,
+remember to replace it with your own
+or set `mysql_optfile="$YOUR_CNF_FILE` in rc.conf.
+
+Установка Апачи
+
+# cd /usr/ports/www/apache24
+# make config-recursive
+# make install clean
+# echo 'apache24_enable="YES"' >> /etc/rc.conf
+
+Теперь создадим 2 виртуальных хоста. На первом будет располагаться phpmyadmin, на втором наш сайт, в данном случае wordpress. Не забываем настроить в DNS эти хосты. Раскомментируем строчку в конфиге /usr/local/etc/apache24/httpd.conf
+
+Include etc/apache24/extra/httpd-vhosts.conf
+
+Дальше идем в папку /usr/local/etc/apache24/extra/ и редактируем файл httpd-vhosts.conf до следующего вида:
+
+<VirtualHost 127.0.0.1:80>
+
+ServerAdmin root@websrv.local
+DocumentRoot "/web/sites/websrv.local/www"
+ServerName websrv.local
+ServerAlias www.websrv.local
+ErrorLog "/web/sites/websrv.local/log/error.log"
+CustomLog "/web/sites/websrv.local/log/access.log" common
+php_admin_value open_basedir "/web/sites/websrv.local:."
+php_admin_value upload_tmp_dir "/web/sites/websrv.local/tmp"
+php_admin_value session.save_path "/web/sites/websrv.local/tmp"
+
+<Directory /web/sites/websrv.local/www/>
+AllowOverride All
+RewriteEngine On
+Require all granted
+DirectoryIndex index.php index.html index.htm
+
+Order allow,deny
+Allow from All
+</Directory>
+
+</VirtualHost>
+
+<VirtualHost 127.0.0.1:80>
+
+ServerAdmin root@websrv.local
+DocumentRoot "/web/sites/pma53.websrv.local/www"
+ServerName pma53.websrv.local
+ServerAlias www.pma53.websrv.local
+ErrorLog "/web/sites/pma53.websrv.local/log/error.log"
+CustomLog "/web/sites/pma53.websrv.local/log/access.log" common
+php_admin_value open_basedir "/web/sites/pma53.websrv.local:."
+php_admin_value upload_tmp_dir "/web/sites/pma53.websrv.local/tmp"
+php_admin_value session.save_path "/web/sites/pma53.websrv.local/tmp"
+
+<Directory /web/sites/pma53.websrv.local/www/>
+AllowOverride All
+Require all granted
+DirectoryIndex index.php index.html index.htm
+
+Order allow,deny
+Allow from All
+</Directory>
+
+</VirtualHost>
+
+
+
+Обращаю внимание на параметр Require all granted. На предыдущих серверах я его не указывал. В этот же раз при обращении к виртуальному домену в логах получал ошибку:
+
+AH01630: client denied by server configuration
+
+Скорее всего это особенность apache24, до этого я пользовался более ранними версиями.
+
+Сайты я размещаю в каталоге /web/sites. Для каждого домена отдельная папка. Для улучшения безопасности можно настроить отдельных пользователей для каждого поддомена, сделать пользователя ftp, доступ к логам и так далее. В этой статье я не буду касаться этого вопроса. У нас будет один сайт и один пользователь. Создаем необходимые папки:
+
+# mkdir /web/sites
+# mkdir /web/sites/websrv.local && mkdir /web/sites/pma53.websrv.local
+# cd /web/sites/websrv.local && mkdir log tmp www
+# cd /web/sites/pma53.websrv.local && mkdir log tmp www
+# chown -R www:www /web/sites
+
+Установка PHP и phpextensions
+
+# cd /usr/ports/lang/php5
+# make config-recursive
+# make install clean
+# cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
+# cd /usr/ports/lang/php5-extensions
+# make config-recursive
+# make install clean
+# cd /usr/ports/www/mod_php5
+# make install clean
+
+<IfModule mod_php5.c>
+AddType application/x-httpd-php .php
+AddType application/x-httpd-php-source .phps
+DirectoryIndex index.php index.html
+</IfModule>
+
+конфиг апаче
+LoadModule rewrite_module libexec/apache24/mod_rewrite.so
+
+В фале httpd.conf находим строку со значением ServerName и приводим ее к виду:
+ServerName websrv.local:80
+
+Сохраняем файл, проверяем конфигурацию:
+# apachectl -t
+
+Syntax OK
+Все в порядке, можно стартовать apache:
+# /usr/local/etc/rc.d/apache24 start
+
+Проверяем, все ли запустилось:
+
+# ps ax | grep httpd
+60555 - Ss 0:00.06 /usr/local/sbin/httpd -DNOHTTPACCEPT
+60556 - I 0:00.00 /usr/local/sbin/httpd -DNOHTTPACCEPT
+60557 - I 0:00.00 /usr/local/sbin/httpd -DNOHTTPACCEPT
+60558 - I 0:00.00 /usr/local/sbin/httpd -DNOHTTPACCEPT
+60559 - I 0:00.00 /usr/local/sbin/httpd -DNOHTTPACCEPT
+60560 - I 0:00.00 /usr/local/sbin/httpd -DNOHTTPACCEPT
+
+Если получаете что-то подобное, значит все в порядке. Сейчас можно в браузере набрать http://ip-сервера/ и увидеть страничку с одной единственной надписью:
+
+It works!
+
+Это означает, что веб сервер apache работает, все в порядке.
