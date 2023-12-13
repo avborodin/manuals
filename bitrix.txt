@@ -1,1 +1,5 @@
 https://github.com/search?q=academy%20bitrix&type=repositories
+https://github.com/may-cat/maycat.d7dull
+https://github.com/syrex88/bitrix-d7-module
+
+https://github.com/search?q=module%20bitrix&type=repositories
