@@ -3,3 +3,4 @@ https://github.com/may-cat/maycat.d7dull
 https://github.com/syrex88/bitrix-d7-module
 
 https://github.com/search?q=module%20bitrix&type=repositories
+https://dev.1c-bitrix.ru/community/forums/forum6/topic151518
