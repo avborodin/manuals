@@ -1,3 +1,6 @@
+https://zomro.com/rus/blog/faq/316-kak-sozdat-telegram-bota-dlja-monitoringa-udalennyh-hostov
+https://www.xelent.ru/blog/podnimaem-sayt-neotlozhka-poka-spit-admin/
+
 https://github.com/search?q=academy%20bitrix&type=repositories
 https://github.com/may-cat/maycat.d7dull
 https://github.com/syrex88/bitrix-d7-module
