@@ -7,3 +7,64 @@ https://github.com/syrex88/bitrix-d7-module
 
 https://github.com/search?q=module%20bitrix&type=repositories
 https://dev.1c-bitrix.ru/community/forums/forum6/topic151518
+
+
+
+<?php
+defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
+use Bitrix\Main\Localization\Loc;
+Loc::loadMessages(__FILE__);
+
+AddEventHandler('main', 'OnBuildGlobalMenu', 'addMenuItem');
+
+$aMenu = array(
+	array(
+		'parent_menu' => 'global_menu_settings',
+		'sort' => 400,
+		'text' => "Тестовый модуль",
+		'title' => "",
+		'url' => 'perfmon_table.php?lang=ru&table_name=brainkit_test'
+	),
+);
+return $aMenu;
+
+function addMenuItem(&$aGlobalMenu, &$aModuleMenu)
+{
+    global $USER;
+
+    if ($USER->IsAdmin()) {
+
+    	$aGlobalMenu['global_menu_custom'] = [
+            'menu_id' => 'custom',
+            'text' => 'Bitrix Studio',
+            'title' => 'Bitrix Studio',
+            'url' => 'settingss.php?lang=ru',
+            'sort' => 1000,
+            'items_id' => 'global_menu_custom',
+            'help_section' => 'custom',
+            'items' => [
+                [
+                    'parent_menu' => 'global_menu_custom',
+                    'sort'        => 10,
+                    'url'         => 'your_new_page.php?lang=ru',
+                    'text'        => 'your_new_page',
+                    'title'       => 'your_new_page',
+                    'icon'        => 'fav_menu_icon',
+                    'page_icon'   => 'fav_menu_icon',
+                    'items_id'    => 'menu_custom',
+                ],
+                [
+                    'parent_menu' => 'global_menu_custom',
+                    'sort'        => 20,
+                    'url'         => 'your_new_page_2.php?lang=ru',
+                    'text'        => 'your_new_page_2',
+                    'title'       => 'your_new_page_2',
+                    'icon'        => 'fav_menu_icon_2',
+                    'page_icon'   => 'fav_menu_icon_2',
+                    'items_id'    => 'menu_custom',
+                ],
+            ],
+        ];
+
+    }
+}
