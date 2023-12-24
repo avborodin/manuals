@@ -1,1 +1,44 @@
+sshd -T это просмотр полной информации, флаг Т это расширенный тестовый режим
+
+конфиг находится в /etc/ssh/sshd_config
+
+Port 3022
+PermitRootLogin no
+X11Forwarding no
+IgnoreRhosts yes
+UseDNS yes
+PermitEmptyPasswords no
+MaxAuthTries 3
+
+ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no username@system
+
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitRootLogin no
+
+для своего нового юзера сначала нужно сгенерировать ключи SSH на компьютере, с которого вы будете заходить на сервер:
+
+ssh-keygen -t rsa
+
+Публичный ключ хранится в файле .pub и выглядит как строка случайных символов, которые начинаются с ssh-rsa.
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ3GIJzTX7J6zsCrywcjAM/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWm49NWvoo0hdM71sblF956IXY3cRLcTjPlQ84mChKL1X7+D645c7O4Z1N3KtL7l5nVKSG81ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUmt1a00mWci/1qUlaVFft085yvVq7KZbF2OP2NQACUkwfwh+iSTP username@hostname
+
+Затем из-под рута создать на сервере директорию SSH в домашнем каталоге пользователя и добавить публичный ключ SSH в файл authorized_keys, используя текстовый редактор вроде Vim:
+
+mkdir -p /home/user_name/.ssh && touch /home/user_name/.ssh/authorized_keys
+
+vim /home/user_name/.ssh/authorized_keys
+
+Наконец, установить корректные разрешения для файла:
+
+chmod 700 /home/user_name/.ssh && chmod 600 /home/user_name/.ssh/authorized_keys
+
+и изменить владение на этого юзера:
+
+chown -R username:username /home/username/.ssh
+
+Теперь можно залогиниться на сервер под именем юзера по этому ключу:
+
+ssh [username]@hostname
 
