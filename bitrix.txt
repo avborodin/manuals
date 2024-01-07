@@ -1,3 +1,144 @@
+https://www.brekot.ru/blog/bitrix-rest-api/
+
+1.Проверяем, что модуль REST установлен
+
+Переходим в админке: Настройки > Настройки продукта > Модули
+Проверяем или устанавливаем модуль REST API (rest)
+
+2.Создаем страницу для добавления вебхука
+
+Создаем файл, например: /local/rest/index.php (нам он нужен один раз, после его можно будет удалить)
+Добавляем в него следующий код:
+
+require_once($_SERVER['DOCUMENT_ROOT'] . "/bitrix/modules/main/include/prolog_admin.php");
+
+< div class="adm-workarea">
+	$APPLICATION->IncludeComponent(
+		"bitrix:rest.hook",
+		".default",
+		[
+			"SEF_MODE" => "Y",
+			"SEF_FOLDER" => "/local/rest/",
+			"COMPONENT_TEMPLATE" => ".default",
+			"SEF_URL_TEMPLATES" => [
+				"list" => "",
+				"event_list" => "event/",
+				"event_edit" => "event/#id#/",
+				"ap_list" => "ap/",
+				"ap_edit" => "ap/#id#/",
+			]
+		],
+		false
+	);
+
+	< a href="javascript:;" class="adm-btn adm-btn-green"
+		onclick="BX.PopupMenu.show('rest_hook_menu', this, [{
+			'href':'/local/rest/event/0/',
+			'text':'Исходящий вебхук'
+		},{
+			'href':'/local/rest/ap/0/',
+			'text':'Входящий вебхук'
+		}])">
+		Добавить вебхук
+	< /a>
+< /div>
+
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
+
+
+Добавляем в /urlrewrite.php следующий код:
+
+Array(
+	'CONDITION' => '#^/local/rest/#',
+	'RULE' => '',
+	'ID' => 'bitrix:rest.hook',
+	'PATH' => '/local/rest/index.php',
+ )
+
+3. Переходим на созданную страницу и создаем вебхук
+
+Переходим на созданный выше файл
+Нажимаем кнопку "Добавить вебхук" и выбираем "Входящий вебхук"
+
+На появившейся странице выбираем права доступа к пользовательским данным которые разрешены паролю приложения. Нажимаем "Сохранить"
+
+4. Обращение к сайту через REST
+
+const URL = ''; // Подставляем URL полученный на предыдущем шаге
+
+Добавим новый заказ (sale.order.add)
+
+$queryData = http_build_query(array(
+	"fields" => Array(
+		'lid'		   => 's1', // ID сайта
+		'userId'		=> 1, // ID пользователя
+		'currency'	  => 'rub', // Тип валюты
+		'personTypeId'  => 1, // Тип покупателя
+	)
+));
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+	CURLOPT_SSL_VERIFYPEER  => 0,
+	CURLOPT_POST			=> 1,
+	CURLOPT_HEADER		  => 0,
+	CURLOPT_RETURNTRANSFER  => 1,
+	CURLOPT_URL			 => URL . 'sale.order.add',
+	CURLOPT_POSTFIELDS	  => $queryData,
+));
+
+$result = curl_exec($curl);
+
+Получим данные по товару (catalog.product.get)
+
+$queryData = http_build_query(array(
+	"id" => 1111 // ID товара
+));
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+	CURLOPT_SSL_VERIFYPEER  => 0,
+	CURLOPT_POST			=> 1,
+	CURLOPT_HEADER		  => 0,
+	CURLOPT_RETURNTRANSFER  => 1,
+	CURLOPT_URL			 => URL . 'catalog.product.get',
+	CURLOPT_POSTFIELDS	  => $queryData,
+));
+
+$result = curl_exec($curl);
+
+curl_close($curl);
+
+$result = json_decode($result, true);
+
+$result['result']['product']['detailPicture']['url'] = str_replace('/rest/', URL, $result['result']['product']['detailPicture']['url']);
+
+Получим данные по элементу инфоблока (iblock.Element.get)
+
+Внимание: для получения данных из инфоблока в его настройках должнен быть "Включен доступ через REST".
+
+$queryData = http_build_query(array(
+	"iblockId" => 4, // ID инфоблока
+	"elementId" => 1111 // ID элемента
+));
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+	CURLOPT_SSL_VERIFYPEER  => 0,
+	CURLOPT_POST			=> 1,
+	CURLOPT_HEADER		  => 0,
+	CURLOPT_RETURNTRANSFER  => 1,
+	CURLOPT_URL			 => URL . 'iblock.Element.get',
+	CURLOPT_POSTFIELDS	  => $queryData,
+));
+
+$result = curl_exec($curl);
+Приведенные выше примеры описаны в очень упрощенной форме. Более подробно вы можете прочитать в документации по REST API для 1С-Битрикс
+
+
 https://costamedia.ru/blog/shpargalka-1s-bitrix/
 https://zomro.com/rus/blog/faq/316-kak-sozdat-telegram-bota-dlja-monitoringa-udalennyh-hostov
 https://www.xelent.ru/blog/podnimaem-sayt-neotlozhka-poka-spit-admin/
