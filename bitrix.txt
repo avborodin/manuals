@@ -1,3 +1,20 @@
+https://it-svalka.ru/blog/bitrix/sobstvennyy-tip-polzovatelskikh-poley-v-1s-bitriks/
+
+мониторинг
+ps, top, free - память, процессор
+iostat, atop - диски
+apachetop
+
+Битрикс: __bx_log.log или log.txt в корне сайта. Зависит от переменной LOG_FILENAME в файле /bitrix/php_interface/dbconn.php
+Apache: /var/log/httpd/error_log
+Nginx: /var/log/nginx/error.log
+PHP: /var/log/php/exceptions.log
+Почта: /home/bitrix/msmtp_default.log
+bash, cron: /var/spool/mail/root и /var/spool/mail/bitrix
+bitrixvm: /opt/webdir/temp (логи запущенных задач)
+
+
+
 https://www.brekot.ru/blog/bitrix-rest-api/
 
 1.Проверяем, что модуль REST установлен
@@ -139,74 +156,3 @@ $result = curl_exec($curl);
 Приведенные выше примеры описаны в очень упрощенной форме. Более подробно вы можете прочитать в документации по REST API для 1С-Битрикс
 
 
-https://costamedia.ru/blog/shpargalka-1s-bitrix/
-https://zomro.com/rus/blog/faq/316-kak-sozdat-telegram-bota-dlja-monitoringa-udalennyh-hostov
-https://www.xelent.ru/blog/podnimaem-sayt-neotlozhka-poka-spit-admin/
-
-https://github.com/search?q=academy%20bitrix&type=repositories
-https://github.com/may-cat/maycat.d7dull
-https://github.com/syrex88/bitrix-d7-module
-
-https://github.com/search?q=module%20bitrix&type=repositories
-https://dev.1c-bitrix.ru/community/forums/forum6/topic151518
-
-
-
-<?php
-defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
-use Bitrix\Main\Localization\Loc;
-Loc::loadMessages(__FILE__);
-
-AddEventHandler('main', 'OnBuildGlobalMenu', 'addMenuItem');
-
-$aMenu = array(
-	array(
-		'parent_menu' => 'global_menu_settings',
-		'sort' => 400,
-		'text' => "Тестовый модуль",
-		'title' => "",
-		'url' => 'perfmon_table.php?lang=ru&table_name=brainkit_test'
-	),
-);
-return $aMenu;
-
-function addMenuItem(&$aGlobalMenu, &$aModuleMenu)
-{
-    global $USER;
-
-    if ($USER->IsAdmin()) {
-
-    	$aGlobalMenu['global_menu_custom'] = [
-            'menu_id' => 'custom',
-            'text' => 'Bitrix Studio',
-            'title' => 'Bitrix Studio',
-            'url' => 'settingss.php?lang=ru',
-            'sort' => 1000,
-            'items_id' => 'global_menu_custom',
-            'help_section' => 'custom',
-            'items' => [
-                [
-                    'parent_menu' => 'global_menu_custom',
-                    'sort'        => 10,
-                    'url'         => 'your_new_page.php?lang=ru',
-                    'text'        => 'your_new_page',
-                    'title'       => 'your_new_page',
-                    'icon'        => 'fav_menu_icon',
-                    'page_icon'   => 'fav_menu_icon',
-                    'items_id'    => 'menu_custom',
-                ],
-                [
-                    'parent_menu' => 'global_menu_custom',
-                    'sort'        => 20,
-                    'url'         => 'your_new_page_2.php?lang=ru',
-                    'text'        => 'your_new_page_2',
-                    'title'       => 'your_new_page_2',
-                    'icon'        => 'fav_menu_icon_2',
-                    'page_icon'   => 'fav_menu_icon_2',
-                    'items_id'    => 'menu_custom',
-                ],
-            ],
-        ];
-
-    }
-}
