@@ -1,3 +1,8 @@
+git init
+git remote add origin https://git.ftc.group/dev/development/techkeys.git
+git checkout -f dev	
+
+
 git clone https://aborodin_thefactory@bitbucket.org/thefactoryteam/swap-factory.git .
 
 
