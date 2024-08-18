@@ -17,6 +17,7 @@ ALTER ROLE
 
 экспорт из БД
 pg_dump –-host=<host> --username=<name> --dbname=<database name> --file=<database>.sql
+pg_dump -h localhost -U romblin --dbname=db --no-owner --schema-only --no-privileges > migration/schema.dump
 импорт в БД
 psql --file=<database>.sql --host=<server name> --port=5432 --username=<user> --dbname=<target database name>
 
